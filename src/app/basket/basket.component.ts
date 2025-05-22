@@ -1,29 +1,31 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Customer } from '../customer/customer.types';
-import { ApiService } from '../shared/services/api.service';
-import { BasketItem } from './basket.types';
 import { BasketServiceService } from './basket-service.service';
+import { Observable } from 'rxjs';
+import { AsyncPipe, CurrencyPipe, NgForOf, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-basket',
-  standalone: false,
+  standalone: true,
+  imports: [NgForOf, NgIf, CurrencyPipe, AsyncPipe], // Only import what is used in the template
+
   templateUrl: './basket.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BasketComponent {
   protected customer: Customer = { name: '', address: '', creditCard: '' };
-  protected basketItems: BasketItem[] = [];
-
-  protected get basketTotal(): number {
-    return this.basketService.total;
-  }
+  basketItems$;
 
   constructor(
-    private apiService: ApiService,
     private router: Router,
-    private basketService: BasketServiceService // Assuming you meant to inject the basket service here
+    private basketService: BasketServiceService,
   ) {
-    this.basketService.fetch().subscribe((basketItems) => (this.basketItems = basketItems));
+    this.basketItems$ = this.basketService.items$;
+  }
+
+  protected get basketTotal(): Observable<number> {
+    return this.basketService.total;
   }
 
   protected checkout(event: Event): void {
@@ -31,7 +33,6 @@ export class BasketComponent {
     event.preventDefault();
 
     this.basketService.checkout(this.customer).subscribe(() => {
-      this.basketItems = [];
       this.router.navigate(['']);
     });
   }

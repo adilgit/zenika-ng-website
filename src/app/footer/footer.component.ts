@@ -1,11 +1,12 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { ApiService } from '../shared/services/api.service';
 
 @Component({
   selector: 'app-footer',
-  standalone: false,
+  standalone: true,
   templateUrl: './footer.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
   protected fullYear = new Date().getUTCFullYear();

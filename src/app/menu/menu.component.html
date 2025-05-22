@@ -2,8 +2,7 @@
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" [routerLink]="['/']">
       <img class="me-2" src="assets/logo.webp" height="24" width="24" alt="logo" title="Logo du site" />
-
-      Zenika Ecommerce
+      Zenika Ecommerce 
     </a>
 
     <ul class="nav navbar-nav">
@@ -11,7 +10,7 @@
         <a class="nav-link position-relative" [routerLink]="['/basket']">
           Voir mon panier
 
-          <span *ngIf="numberOfBasketItems" class="position-absolute top-0 start-100 translate-middle badge bg-dark">
+          <span  *ngIf="numberOfBasketItems$ | async as numberOfBasketItems" class="position-absolute top-0 start-100 translate-middle badge bg-dark">
             {{ numberOfBasketItems }}
           </span>
         </a>

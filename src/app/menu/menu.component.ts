@@ -1,22 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../shared/services/api.service';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { BasketServiceService } from '../basket/basket-service.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
-  standalone: false,
+  standalone: true,
+  imports: [AsyncPipe, RouterModule, NgIf],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './menu.component.html',
 })
-export class MenuComponent implements OnInit {
-  protected numberOfBasketItems = 0;
+export class MenuComponent {
+  private basketService = inject(BasketServiceService);
 
-  constructor(
-    private basketService: BasketServiceService // Assuming you meant to inject the basket service here
-  ) {
-    // For now, we have an issue: the `numberOfBasketItems` property is not reactive!
-    // The property is not updated when we add a product to the bakset or after checkout...
+  constructor() {
+    this.basketService.fetch().subscribe();
   }
-  ngOnInit(): void {
-    this.basketService.fetch().subscribe(({ length }) => (this.numberOfBasketItems = length));
+
+  get numberOfBasketItems$(): Observable<number> {
+    return this.basketService.numberOfItems$;
   }
+
 }
